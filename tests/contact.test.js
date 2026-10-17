@@ -18,6 +18,16 @@ const valid = {
   mensaje: "Quiero renovar la identidad de mi marca.",
 };
 
+function environment(store = new Map()) {
+  return {
+    CONTACT_RECIPIENT: "destino@example.com",
+    CONTACT_LIMITS: {
+      get: async (key) => store.get(key) || null,
+      put: async (key, value) => store.set(key, value),
+    },
+  };
+}
+
 test("rechaza envíos sin configurar destinatario", async () => {
   const response = await onRequestPost({ request: request(valid), env: {} });
   assert.equal(response.status, 503);
@@ -26,7 +36,7 @@ test("rechaza envíos sin configurar destinatario", async () => {
 test("valida datos antes de enviar", async () => {
   const response = await onRequestPost({
     request: request({ ...valid, email: "incorrecto" }),
-    env: { CONTACT_RECIPIENT: "destino@example.com" },
+    env: environment(),
   });
   assert.equal(response.status, 400);
 });
@@ -48,7 +58,7 @@ test("envía al destinatario configurado en el servidor", async (context) => {
 
   const response = await onRequestPost({
     request: request(valid),
-    env: { CONTACT_RECIPIENT: "destino@example.com" },
+    env: environment(),
   });
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { ok: true });
@@ -75,7 +85,7 @@ test("avisa cuando el buzón todavía requiere activación", async (context) => 
 
   const response = await onRequestPost({
     request: request(valid),
-    env: { CONTACT_RECIPIENT: "destino@example.com" },
+    env: environment(),
   });
   assert.equal(response.status, 503);
   assert.match((await response.json()).error, /no está activado/);
@@ -91,8 +101,24 @@ test("no confirma el envío si el proveedor lo rechaza", async (context) => {
 
   const response = await onRequestPost({
     request: request(valid),
-    env: { CONTACT_RECIPIENT: "destino@example.com" },
+    env: environment(),
   });
   assert.equal(response.status, 502);
   assert.equal((await response.json()).ok, false);
+});
+
+test("limita a dos envíos por IP durante un minuto", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ success: "true" }), { status: 200 });
+
+  const env = environment();
+  assert.equal((await onRequestPost({ request: request(valid), env })).status, 200);
+  assert.equal((await onRequestPost({ request: request(valid), env })).status, 200);
+  const limited = await onRequestPost({ request: request(valid), env });
+  assert.equal(limited.status, 429);
+  assert.match((await limited.json()).error, /Esperá un minuto/);
 });

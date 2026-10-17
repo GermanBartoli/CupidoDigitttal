@@ -55,6 +55,26 @@ export async function onRequestPost({ request, env }) {
   if (!allowed.includes(servicio))
     return json({ ok: false, error: "Elegí un servicio válido." }, 400);
 
+  if (!env.CONTACT_LIMITS)
+    return json({ ok: false, error: "El formulario todavía no está configurado." }, 503);
+
+  const ip = request.headers.get("CF-Connecting-IP") || "local";
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip));
+  const key = `contact:${Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+  try {
+    const attempts = Number(await env.CONTACT_LIMITS.get(key)) || 0;
+    if (attempts >= 2)
+      return json(
+        { ok: false, error: "Esperá un minuto antes de enviar otro mensaje." },
+        429,
+      );
+    await env.CONTACT_LIMITS.put(key, String(attempts + 1), {
+      expirationTtl: 60,
+    });
+  } catch {
+    return json({ ok: false, error: "Intentá nuevamente más tarde." }, 503);
+  }
+
   const payload = new URLSearchParams({
     name: nombre,
     email,

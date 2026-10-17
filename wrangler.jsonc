@@ -2,4 +2,10 @@
   "name": "cupido-digitttal",
   "pages_build_output_dir": "dist",
   "compatibility_date": "2026-10-17",
+  "kv_namespaces": [
+    {
+      "binding": "CONTACT_LIMITS",
+      "id": "8fe70b1b60da474d84b8cbe2a6c25c83"
+    }
+  ]
 }

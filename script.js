@@ -40,6 +40,26 @@ if ("IntersectionObserver" in window) {
 const form = document.querySelector("#contact-form");
 const status = document.querySelector("#form-status");
 
+async function sendDirectly() {
+  const data = new FormData(form);
+  const response = await fetch("https://formsubmit.co/ajax/anastacianieto2@gmail.com", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      name: data.get("nombre"),
+      email: data.get("email"),
+      service: data.get("servicio"),
+      message: data.get("mensaje"),
+      _subject: "Nuevo contacto desde Cupido Digitttal",
+      _template: "table",
+      _honey: data.get("website"),
+    }),
+  });
+  const result = await response.json();
+  if (!response.ok || (result.success !== true && result.success !== "true"))
+    throw new Error("No pudimos enviar el mensaje ahora. Intentá más tarde.");
+}
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!form.reportValidity()) return;
@@ -55,7 +75,8 @@ form.addEventListener("submit", async (event) => {
       headers: { Accept: "application/json" },
     });
     const result = await response.json();
-    if (!response.ok || !result.ok)
+    if (response.status === 502) await sendDirectly();
+    else if (!response.ok || !result.ok)
       throw new Error(result.error || "No pudimos enviar el mensaje.");
     form.reset();
     status.textContent = "¡Mensaje enviado! Te responderemos pronto. ♥";
