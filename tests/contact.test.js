@@ -38,9 +38,11 @@ test("envía al destinatario configurado en el servidor", async (context) => {
   });
   let url;
   let body;
+  let headers;
   globalThis.fetch = async (destination, options) => {
     url = destination;
     body = new URLSearchParams(options.body);
+    headers = options.headers;
     return new Response(JSON.stringify({ success: "true" }), { status: 200 });
   };
 
@@ -53,6 +55,30 @@ test("envía al destinatario configurado en el servidor", async (context) => {
   assert.equal(url, "https://formsubmit.co/ajax/destino%40example.com");
   assert.equal(body.get("email"), valid.email);
   assert.equal(body.get("message"), valid.mensaje);
+  assert.equal(headers.Origin, "https://cupido.example");
+  assert.equal(headers.Referer, "https://cupido.example/");
+});
+
+test("avisa cuando el buzón todavía requiere activación", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        success: "false",
+        message: "This form needs Activation.",
+      }),
+      { status: 200 },
+    );
+
+  const response = await onRequestPost({
+    request: request(valid),
+    env: { CONTACT_RECIPIENT: "destino@example.com" },
+  });
+  assert.equal(response.status, 503);
+  assert.match((await response.json()).error, /no está activado/);
 });
 
 test("no confirma el envío si el proveedor lo rechaza", async (context) => {

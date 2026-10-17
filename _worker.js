@@ -73,13 +73,27 @@ export async function onRequestPost({ request, env }) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
+          Origin: new URL(request.url).origin,
+          Referer: new URL(request.url).origin + "/",
         },
         body: payload.toString(),
       },
     );
     const result = await response.json();
-    if (!response.ok || result.success === false || result.success === "false")
+    if (result.success === false || result.success === "false") {
+      if (/activation/i.test(String(result.message || ""))) {
+        return json(
+          {
+            ok: false,
+            error:
+              "El formulario aún no está activado. Escribinos por Instagram mientras tanto.",
+          },
+          503,
+        );
+      }
       throw new Error("Rechazado por el servicio de correo");
+    }
+    if (!response.ok) throw new Error("Error del servicio de correo");
     return json({ ok: true });
   } catch {
     return json(
