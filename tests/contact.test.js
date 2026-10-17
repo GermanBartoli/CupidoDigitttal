@@ -1,0 +1,72 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { onRequestPost } from "../functions/api/contact.js";
+
+function request(fields) {
+  const form = new FormData();
+  for (const [key, value] of Object.entries(fields)) form.set(key, value);
+  return new Request("https://cupido.example/api/contact", {
+    method: "POST",
+    body: form,
+  });
+}
+
+const valid = {
+  nombre: "Ana",
+  email: "ana@example.com",
+  servicio: "Diseño e identidad",
+  mensaje: "Quiero renovar la identidad de mi marca.",
+};
+
+test("rechaza envíos sin configurar destinatario", async () => {
+  const response = await onRequestPost({ request: request(valid), env: {} });
+  assert.equal(response.status, 503);
+});
+
+test("valida datos antes de enviar", async () => {
+  const response = await onRequestPost({
+    request: request({ ...valid, email: "incorrecto" }),
+    env: { CONTACT_RECIPIENT: "destino@example.com" },
+  });
+  assert.equal(response.status, 400);
+});
+
+test("envía al destinatario configurado en el servidor", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  let url;
+  let body;
+  globalThis.fetch = async (destination, options) => {
+    url = destination;
+    body = new URLSearchParams(options.body);
+    return new Response(JSON.stringify({ success: "true" }), { status: 200 });
+  };
+
+  const response = await onRequestPost({
+    request: request(valid),
+    env: { CONTACT_RECIPIENT: "destino@example.com" },
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.equal(url, "https://formsubmit.co/ajax/destino%40example.com");
+  assert.equal(body.get("email"), valid.email);
+  assert.equal(body.get("message"), valid.mensaje);
+});
+
+test("no confirma el envío si el proveedor lo rechaza", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ success: false }), { status: 200 });
+
+  const response = await onRequestPost({
+    request: request(valid),
+    env: { CONTACT_RECIPIENT: "destino@example.com" },
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).ok, false);
+});
