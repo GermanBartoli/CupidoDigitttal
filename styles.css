@@ -513,6 +513,12 @@ h2 em,
 .social {
   background: #f8dcd7;
 }
+.music-section {
+  background: #f8dcd7;
+}
+.music-section .music-card {
+  margin-top: 0;
+}
 .social-heading {
   align-items: end;
 }
@@ -529,6 +535,7 @@ h2 em,
   display: flex;
   align-items: center;
   gap: 45px;
+  margin-top: 42px;
   padding: 30px 0;
   border-top: 1px solid #dbada9;
   border-bottom: 1px solid #dbada9;
