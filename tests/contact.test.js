@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { onRequestPost } from "../functions/api/contact.js";
+import { onRequestPost } from "../_worker.js";
 
 function request(fields) {
   const form = new FormData();
