@@ -1,5 +1,10 @@
 # Cupido Digitttal
 
+## Enlaces
+
+- [Sitio publicado en Cloudflare Pages](https://cupido-digitttal.pages.dev/)
+- [Repositorio en GitHub](https://github.com/GermanBartoli/CupidoDigitttal)
+
 Landing page del estudio creativo Cupido Digitttal. Sitio estático con un Worker de Cloudflare Pages para el formulario.
 
 ## Sitio publicado
