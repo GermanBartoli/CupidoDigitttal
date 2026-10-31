@@ -87,3 +87,107 @@ form.addEventListener("submit", async (event) => {
     button.disabled = false;
   }
 });
+const mediaDialog = document.querySelector("#media-dialog");
+const mediaImage = document.querySelector("#media-image");
+const mediaVideo = document.querySelector("#media-video");
+const mediaControls = document.querySelector(".gallery-controls");
+const mediaError = document.querySelector("#media-error");
+let activeMedia;
+let mediaIndex = 0;
+let mediaTrigger;
+
+const works = {
+  ingreso: { title: "Un nuevo ingreso que se ve.", description: "Flyer de producto para Almacén La Paz: Monster Ultra Strawberry Dreams.", images: ["/assets/trabajos/nuevo-ingreso.jpeg"], url: "/assets/trabajos/nuevo-ingreso.jpeg" },
+  halloween: { title: "La Paz se viste de Halloween.", description: "Una identidad de temporada para acompañar los contenidos de Almacén La Paz.", images: ["/assets/trabajos/halloween.jpeg"], url: "/assets/trabajos/halloween.jpeg" },
+  boletos: { title: "Boletos con un toque de magia.", description: "Boleto Fantasma: tres versiones para La Paz 1, La Paz 2 y La Paz 3. Explorá los diseños o abrí el PDF completo.", images: [1, 2, 3].map(number => `/assets/trabajos/ticket-${number}.jpg`), url: "/assets/trabajos/boletos-fantasma.pdf", sourceLabel: "Abrir PDF completo ↗" },
+};
+
+function showMediaImage() {
+  mediaError.hidden = true;
+  mediaImage.src = activeMedia.images[mediaIndex];
+  mediaImage.alt = `${activeMedia.title} · imagen ${mediaIndex + 1} de ${activeMedia.images.length}`;
+  document.querySelector("#media-counter").textContent = `${mediaIndex + 1} / ${activeMedia.images.length}`;
+}
+
+function openMedia(item, trigger) {
+  activeMedia = item;
+  mediaIndex = 0;
+  mediaTrigger = trigger;
+  mediaError.hidden = true;
+  document.querySelector("#media-title").textContent = item.title;
+  document.querySelector("#media-description").textContent = item.description;
+  document.querySelector("#media-label").textContent = item.label || "CUPIDO DIGITTTAL · DISEÑO";
+  const source = document.querySelector("#media-source");
+  source.href = item.url;
+  source.textContent = item.sourceLabel || "Abrir diseño original ↗";
+  mediaImage.hidden = Boolean(item.video);
+  mediaVideo.hidden = !item.video;
+  mediaControls.hidden = Boolean(item.video) || item.images.length < 2;
+  if (item.video) {
+    mediaVideo.poster = item.images[0];
+    mediaVideo.src = item.video;
+    mediaVideo.setAttribute("aria-label", item.title);
+  } else showMediaImage();
+  mediaDialog.showModal();
+  document.body.classList.add("modal-open");
+}
+
+function stepMedia(direction) {
+  if (!activeMedia || activeMedia.video || activeMedia.images.length < 2) return;
+  mediaIndex = (mediaIndex + direction + activeMedia.images.length) % activeMedia.images.length;
+  showMediaImage();
+}
+
+const postVideos = {
+  "Dd-EZdOhMqi": "/assets/instagram-juego.mp4",
+  "Ddzy5iQhMVa": "/assets/instagram-jefes.mp4",
+};
+document.querySelectorAll(".post-card").forEach(card => {
+  card.setAttribute("aria-haspopup", "dialog");
+  card.addEventListener("click", event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const code = new URL(card.href).pathname.split("/").filter(Boolean).pop();
+    openMedia({ title: card.querySelector("h3").textContent, description: card.querySelector(".post-content p").textContent.trim(), images: [card.querySelector("img").src], video: postVideos[code], url: card.href, label: "CUPIDO DIGITTTAL · INSTAGRAM", sourceLabel: "Ver en Instagram ↗" }, card);
+  });
+});
+document.querySelectorAll("[data-work]").forEach(button => {
+  button.setAttribute("aria-haspopup", "dialog");
+  button.addEventListener("click", () => openMedia(works[button.dataset.work], button));
+});
+document.querySelector(".media-close").addEventListener("click", () => mediaDialog.close());
+document.querySelector("#media-prev").addEventListener("click", () => stepMedia(-1));
+document.querySelector("#media-next").addEventListener("click", () => stepMedia(1));
+mediaDialog.addEventListener("keydown", event => {
+  if (!mediaVideo.hidden) return;
+  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+    event.preventDefault();
+    stepMedia(event.key === "ArrowRight" ? 1 : -1);
+  }
+});
+mediaDialog.addEventListener("click", event => {
+  if (event.target !== mediaDialog) return;
+  const rect = mediaDialog.getBoundingClientRect();
+  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) mediaDialog.close();
+});
+mediaDialog.addEventListener("close", () => {
+  mediaVideo.pause();
+  mediaVideo.removeAttribute("src");
+  mediaVideo.load();
+  mediaImage.removeAttribute("src");
+  document.body.classList.remove("modal-open");
+  mediaTrigger?.focus({ preventScroll: true });
+  activeMedia = null;
+});
+[mediaImage, mediaVideo].forEach(element => element.addEventListener("error", () => {
+  if (mediaDialog.open && element.getAttribute("src")) mediaError.hidden = false;
+}));
+let mediaTouchX = null;
+mediaImage.addEventListener("touchstart", event => { mediaTouchX = event.changedTouches[0].clientX; }, { passive: true });
+mediaImage.addEventListener("touchend", event => {
+  if (mediaTouchX !== null) {
+    const distance = event.changedTouches[0].clientX - mediaTouchX;
+    if (Math.abs(distance) > 45) stepMedia(distance < 0 ? 1 : -1);
+  }
+  mediaTouchX = null;
+}, { passive: true });

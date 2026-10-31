@@ -1,0 +1,37 @@
+name: Publicar Cupido en Cloudflare
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-produccion
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v6
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validar y compilar el sitio
+        run: |
+          npm test
+          npm run check
+          npm run build
+      - name: Publicar en el proyecto existente
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=cupido-digitttal --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
