@@ -132,7 +132,13 @@ export default {
     if (url.pathname === "/api/contact") {
       if (request.method !== "POST")
         return json({ ok: false, error: "Método no permitido." }, 405);
-      return onRequestPost({ request, env });
+      const original = await onRequestPost({ request, env });
+      const response = new Response(original.body, original);
+      if (request.headers.get("Origin") === "https://germanbartoli.github.io") {
+        response.headers.set("Access-Control-Allow-Origin", "https://germanbartoli.github.io");
+        response.headers.append("Vary", "Origin");
+      }
+      return response;
     }
     return env.ASSETS.fetch(request);
   },
