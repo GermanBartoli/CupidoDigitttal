@@ -271,9 +271,20 @@ h2 em,
   font-weight: 700;
   letter-spacing: 0.16em;
 }
-.ticker div {
+.ticker-track {
+  display: flex;
   width: max-content;
   animation: marquee 35s linear infinite;
+}
+.ticker-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-around;
+  min-width: 100vw;
+}
+.ticker-group > div {
+  flex-shrink: 0;
 }
 .ticker span {
   padding: 0 28px;
@@ -1310,7 +1321,7 @@ h2 em,
   html {
     scroll-behavior: auto;
   }
-  .ticker div {
+  .ticker-track {
     animation: none;
   }
   .reveal {
