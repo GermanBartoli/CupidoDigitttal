@@ -129,7 +129,7 @@ button {
   display: none;
 }
 .hero {
-  height: min(760px, calc(100svh - 88px));
+  height: calc(100svh - 88px);
   min-height: 590px;
   position: relative;
   overflow: hidden;
