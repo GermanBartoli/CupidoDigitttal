@@ -1,11 +1,12 @@
 {
   "name": "cupido-digitttal",
-  "version": "1.0.0",
+  "version": "1.1.6",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",
     "test": "node --test",
     "check": "node --check script.js && node --check _worker.js"
-  }
+  },
+  "packageManager": "pnpm@11.25.0"
 }

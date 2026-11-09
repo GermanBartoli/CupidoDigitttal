@@ -41,7 +41,7 @@ Landing page del estudio creativo Cupido Digitttal. Sitio estático con un Worke
 Los archivos fuente son HTML, CSS y JavaScript sin dependencias de ejecución. Para probar el sitio y el formulario localmente:
 
 1. Crear `.dev.vars` con `CONTACT_RECIPIENT=<correo de destino>`.
-2. Ejecutar `npm run build` y `npx wrangler pages dev dist`.
+2. Ejecutar `pnpm run build` y `pnpm dlx wrangler pages dev dist`.
 3. Abrir la dirección local que indique Wrangler.
 
 En Cloudflare Pages, configurar `CONTACT_RECIPIENT` como variable de entorno de producción y vincular el espacio KV `CONTACT_LIMITS`. El Worker valida los datos y limita a dos intentos por IP durante un minuto. El formulario se envía a [FormSubmit](https://formsubmit.co/), cuyo buzón debe activarse desde el correo inicial. Cuando FormSubmit limita la salida de Cloudflare, el navegador reintenta directamente; en ese caso la dirección técnica de destino queda visible en `script.js`. La dirección gris mostrada en la página es la solicitada para el público. No se debe guardar `.dev.vars` en Git.
@@ -52,7 +52,7 @@ Las imágenes de portada, servicios y moodboard fueron creadas con IA como mater
 
 ## Publicación
 
-Proyecto de Cloudflare Pages: `cupido-digitttal`. `npm run build` prepara `dist/` con los archivos públicos y `_worker.js`. Este último atiende el formulario y sirve los archivos estáticos; funciona con la carga directa de Cloudflare Pages. Para publicar, cargar el contenido de `dist/` o un ZIP de ese directorio.
+Proyecto de Cloudflare Pages: `cupido-digitttal`. `pnpm run build` prepara `dist/` con los archivos públicos y `_worker.js`. Este último atiende el formulario y sirve los archivos estáticos; funciona con la carga directa de Cloudflare Pages. Para publicar, cargar el contenido de `dist/` o un ZIP de ese directorio.
 
 Cada push a `main` ejecuta `.github/workflows/cloudflare.yml`: verifica las pruebas y la sintaxis, compila el sitio y publica en el proyecto existente. El flujo utiliza los secretos de GitHub Actions `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`; también admite ejecución manual. Sitio: https://cupido-digitttal.pages.dev/.
 
