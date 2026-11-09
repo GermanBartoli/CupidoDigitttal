@@ -1,5 +1,22 @@
 # Cupido Digitttal
 
+**Sitio de un estudio creativo de Córdoba: servicios, proceso, trabajos, publicaciones y contacto.**
+
+[![Repositorio](https://img.shields.io/badge/GitHub-GermanBartoli-181717?logo=github)](https://github.com/GermanBartoli/CupidoDigitttal)
+[![Verificaciones](https://github.com/GermanBartoli/CupidoDigitttal/actions/workflows/cloudflare.yml/badge.svg)](https://github.com/GermanBartoli/CupidoDigitttal/actions/workflows/cloudflare.yml)
+
+[Abrir sitio](https://cupido-digitttal.pages.dev/) · [Empezar](#primeros-pasos) · [Mapa del repositorio](#mapa-del-repositorio) · [Autoría](#autoría-de-esta-documentación)
+
+![Vista del proyecto: Cupido Digitttal](docs/images/vista-actual.jpg)
+
+*Captura de la página publicada, tomada el 9 de noviembre de 2026. Conservada sin redimensionar ni recomprimir.*
+
+## Primeros pasos
+
+1. Recorré Qué hacemos y Cómo trabajamos para conocer la propuesta.
+2. Abrí Contenidos e Instagram para explorar diseños, carruseles y reels dentro del sitio.
+3. Usá Hablemos o WhatsApp para preparar una consulta; el visitante decide cuándo enviar el mensaje.
+
 ## Enlaces
 
 - [Sitio publicado en Cloudflare Pages](https://cupido-digitttal.pages.dev/)
@@ -44,3 +61,15 @@ Cada push a `main` ejecuta `.github/workflows/cloudflare.yml`: verifica las prue
 La presentación explica la referencia al álbum Cupido (16 de febrero de 2023) y las tres T de La Triple T. La sección de contenidos muestra dos diseños y las tres versiones de los boletos de Almacén La Paz, con navegación por flechas, teclado y gesto táctil, además del PDF original. Los archivos están en assets/trabajos/.
 
 La sección de WhatsApp y el botón flotante apuntan al 5493518794427 e incluyen un mensaje personalizado. Abrir el enlace prepara el mensaje; el visitante decide cuándo enviarlo.
+
+## Mapa del repositorio
+
+- [package.json](<package.json>)
+- [index.html](<index.html>)
+- [docs/PUBLICACION.md](<docs/PUBLICACION.md>)
+
+## Autoría de esta documentación
+
+Repositorio mantenido por [Germán Bartoli](https://github.com/GermanBartoli). Guía revisada y actualizada con **Codex**, coautor de esta actualización documental. Los autores, colaboradores, licencias y recursos de terceros conservan sus créditos originales.
+
+Los commits de esta revisión incluyen `Co-authored-by: Codex <noreply@openai.com>`; esta atribución no modifica la autoría del historial anterior.
