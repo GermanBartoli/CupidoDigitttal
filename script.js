@@ -150,11 +150,13 @@ mediaDialog.addEventListener("keydown", event => {
     stepMedia(event.key === "ArrowRight" ? 1 : -1);
   }
 });
-mediaDialog.addEventListener("click", event => {
-  if (event.target !== mediaDialog) return;
-  const rect = mediaDialog.getBoundingClientRect();
-  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) mediaDialog.close();
-});
+if (!('closedBy' in HTMLDialogElement.prototype)) {
+  mediaDialog.addEventListener("click", event => {
+    if (event.target !== mediaDialog) return;
+    const rect = mediaDialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) mediaDialog.close();
+  });
+}
 mediaDialog.addEventListener("close", () => {
   mediaVideo.pause();
   mediaVideo.removeAttribute("src");
