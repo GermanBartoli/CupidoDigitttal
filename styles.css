@@ -452,7 +452,7 @@ h2 em,
 .service-tags {
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: #f9bab9;
+  color: #fac6c5;
 }
 .manifesto {
   background: var(--red);
@@ -479,7 +479,7 @@ h2 em,
   font-size: 11px;
   letter-spacing: 0.2em;
   font-weight: 700;
-  color: #f4b3b3;
+  color: #f7c7c7;
 }
 .process {
   background: var(--cream);
@@ -641,7 +641,7 @@ h2 em,
 }
 .post-heading span {
   font-size: 11px;
-  color: #796b6b;
+  color: #6c5f5f;
 }
 .instagram-grid {
   display: grid;
@@ -689,7 +689,7 @@ h2 em,
   font-size: 11px;
 }
 .post-platform small {
-  color: #8b7d7d;
+  color: #7d7070;
   font-size: 10px;
 }
 .post-platform b {
@@ -751,7 +751,7 @@ h2 em,
 }
 .social-note {
   font-size: 11px;
-  color: #796b6b;
+  color: #6c5f5f;
   margin: 20px 0 0;
 }
 .creative {
@@ -869,7 +869,7 @@ h2 em,
   font-weight: 600;
 }
 .contact-details small {
-  color: #7d7270;
+  color: #786d6c;
 }
 .contact-form {
   display: flex;
@@ -928,11 +928,11 @@ h2 em,
 }
 .form-email {
   font-size: 11px;
-  color: #9a9190;
+  color: #756e6d;
   margin: -12px 0 0;
 }
 .form-email span {
-  color: #8e8584;
+  color: #766e6e;
 }
 .form-status {
   min-height: 20px;
