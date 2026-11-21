@@ -8,6 +8,9 @@ const json = (data, status = 200) =>
   });
 
 export async function onRequestPost({ request, env }) {
+  const origen = request.headers.get("Origin");
+  if (origen && origen !== new URL(request.url).origin && origen !== "https://germanbartoli.github.io")
+    return json({ ok: false, error: "Origen no permitido." }, 403);
   if (!env.CONTACT_RECIPIENT)
     return json(
       { ok: false, error: "El formulario todavía no está configurado." },
@@ -18,7 +21,23 @@ export async function onRequestPost({ request, env }) {
 
   let form;
   try {
-    form = await request.formData();
+    const reader = request.body?.getReader();
+    if (!reader) return json({ ok: false, error: "Faltan los datos." }, 400);
+    const chunks = [];
+    let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > 12000) {
+        await reader.cancel();
+        return json({ ok: false, error: "El mensaje es demasiado largo." }, 413);
+      }
+      chunks.push(value);
+    }
+    form = await new Response(new Blob(chunks), {
+      headers: { "Content-Type": request.headers.get("Content-Type") || "" },
+    }).formData();
   } catch {
     return json({ ok: false, error: "No pudimos leer el formulario." }, 400);
   }
