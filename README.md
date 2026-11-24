@@ -44,7 +44,7 @@ Los archivos fuente son HTML, CSS y JavaScript sin dependencias de ejecución. P
 2. Ejecutar `pnpm run build` y `pnpm dlx wrangler pages dev dist`.
 3. Abrir la dirección local que indique Wrangler.
 
-En Cloudflare Pages, configurar `CONTACT_RECIPIENT` como variable de entorno de producción y vincular el espacio KV `CONTACT_LIMITS`. El Worker valida los datos y limita a dos intentos por IP durante un minuto. El formulario se envía a [FormSubmit](https://formsubmit.co/), cuyo buzón debe activarse desde el correo inicial. Cuando FormSubmit limita la salida de Cloudflare, el navegador reintenta directamente; en ese caso la dirección técnica de destino queda visible en `script.js`. La dirección gris mostrada en la página es la solicitada para el público. No se debe guardar `.dev.vars` en Git.
+En Cloudflare Pages, configurar `CONTACT_RECIPIENT` como variable de entorno de producción y vincular la base D1 `CUPO_CONTACTO`. El Worker valida los datos y limita a dos intentos por IP durante un minuto. El formulario se envía a [FormSubmit](https://formsubmit.co/), cuyo buzón debe activarse desde el correo inicial. Un envío rechazado se informa al visitante. La dirección gris mostrada en la página es la solicitada para el público. No se debe guardar `.dev.vars` en Git.
 
 Las tarjetas abren un visor dentro del sitio con los dos reels, su audio y la publicación de imagen. Cada visor conserva el enlace original de Instagram. Los videos se cargan al abrir la tarjeta y se detienen al cerrar. Las historias destacadas enlazan directamente a Instagram. Para actualizar publicaciones, modificar las tarjetas de `#instagram` en `index.html`. La sincronización automática requiere acceso autorizado a la API de Meta.
 
